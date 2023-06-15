@@ -85,8 +85,8 @@ a.favorite {
   background: rgba(0, 0, 0, .7);
 }
 
-#slideshow a.prev,
-#slideshow a.next {
+#slideshow a#prev,
+#slideshow a#next {
   position: absolute;
   top: 50%;
   z-index: 2;
@@ -97,11 +97,11 @@ a.favorite {
   background: transparent url("../images/icon_pager.png") 0 0 no-repeat;
 }
 
-#slideshow a.prev {
+#slideshow a#prev {
   left: 20px;
 }
 
-#slideshow a.next {
+#slideshow a#next {
   right: 20px;
   background-position: 100% 0;
 }
@@ -182,4 +182,3 @@ textarea {
   border: 1px solid #cecece;
   border-radius: 4px;
 } 
-*/

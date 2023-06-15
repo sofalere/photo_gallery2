@@ -1,6 +1,7 @@
 class View {
   constructor(gallery) {
     this.gallery = gallery;
+    this.bindChangePhoto();
     return this;
   }
 
@@ -19,16 +20,20 @@ class View {
   }
 
   renderComments(comments) {
-    const commentData = {commentList: [comments]};
-    document.querySelector('#comment').innerHTML;
+    if (!Array.isArray(comments)) {
+      comments = [comments];
+    }
+    const commentData = {commentList: comments};
+    const template = document.querySelector('#comment').innerHTML;
     const tempScript = Handlebars.compile(template);
-    const html = tempScript(stats);
+    const html = tempScript(commentData);
     document.querySelector('#comment_list').innerHTML = html;
   }
 
   bindChangePhoto() {
     document.querySelector('#slideshow').addEventListener('click', e => {
-      if (e.target.classList.contains(".change_photo")) {
+      e.preventDefault();
+      if (e.target.classList.contains("change_photo")) {
         const destination = e.target.id;
         this.gallery.displayPage(destination);
       }
@@ -47,19 +52,19 @@ class Photos {
 
   switchPhoto(direction) {
     if (direction === 'next') {
-      this.current_location = (this.current_location === this.photoList.length - 1) ? 0 : this.currentLocation += 1;
-      // if (this.currentLocation === this.photoList.length - 1)
-      //   this.currentLocation = 0;
-      // else {
-      //   this.currentLocation++;
-      // }
+      // this.current_location = (this.current_location === this.photoList.length - 1) ? 0 : this.currentLocation += 1;
+      if (this.currentLocation === this.photoList.length - 1)
+        this.currentLocation = 0;
+      else {
+        this.currentLocation++;
+      }
     } else if (direction === 'prev') {
-      this.current_location = (this.current_location === 0) ? this.photoArray.length - 1 : this.currentLocation -= 1;
-      // if (this.current_location === 0) {
-      //   this.currentLocation = this.photoArray.length - 1;
-      // } else {
-      //   this.currentLocation -= 1;
-      // }
+      // this.current_location = (this.current_location === 0) ? this.photoList.length - 1 : this.currentLocation -= 1;
+      if (this.currentLocation === 0) {
+        this.currentLocation = this.photoList.length - 1;
+      } else {
+        this.currentLocation -= 1;
+      }
     }
 
     const photo = this.photoList[this.currentLocation];
@@ -86,11 +91,11 @@ class Gallery {
   constructor() {
     this.view = new View(this);
     this.currentID = null;
-    this.getAll((photoList) => {
+    this.getAll(((photoList) => {
       const photos = new Photos(photoList);
       this.photos = photos;
       this.displayPage('next');
-    }).bind(this);
+    }).bind(this));
   }
 
   displayPage(direction) {
@@ -98,10 +103,10 @@ class Gallery {
     this.view.renderPhoto(photo.photoInfo);
     this.view.renderStats(photo.statsInfo);
     this.currentID = photo.photoInfo.photo_id;
-    this.getComments((comments) => {
+    this.getComments(((comments) => {
       this.photos.comments = comments;
       this.view.renderComments(comments);
-    }).bind(this);
+    }).bind(this));
   }
 
   getAll = async function getAll(resolve, reject) {

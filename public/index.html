@@ -4,6 +4,34 @@
   <title>Photo Gallery</title>
   <meta charset="UTF-8" />
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script id="slide" type="text/x-handlebars-template">
+    <div id="photo">
+      <figure>
+        <img src={{src}}>
+        <figcaption>{{caption}}</figcaption>
+      </figure>
+    </div>
+    <div>
+      <a class="change_photo" id="prev" href="#">Prev</a>
+      <a class="change_photo" id="next" href="#">Next</a>
+    </div>
+    <div>
+      <h2>{{title}}</h2>
+      <p>{{created_at}}</p>
+    </div>
+  </script>
+  <script id="stats" type="text/x-handlebars-template">
+    <button class="stat button" id="like" type="button" name="like">Like {{likes}}</button>
+      <button class="stat button" id="favorite" type="button" name="favorite">Favorite {{favorites}}</button>
+  </script>
+  <script id="comment" type="text/x-handlebars-template">
+    {{#each commentList}}
+    <h4>{{name}}</h4>
+    <p>{{date}}</p>
+    <img src={{gravatar}}>
+    <p>{{body}}</p>
+    {{/each}}
+  </script>
   <link rel="stylesheet" href="stylesheets/gallery.css" />
   <script src="javascripts/gallery.js"></script>
 </head>
@@ -11,39 +39,11 @@
   <main>
   <h1>Henrys Pics</h1>
   <div id="slideshow">
-    <script id="slide" type="text/x-handlebars-template">
-      <div id="photo">
-        <figure>
-          <img src={{src}}>
-          <figcaption>{{caption}}</figcaption>
-        </figure>
-      </div>
-      <div>
-        <a class="change_photo" id="prev" href="#">Prev</a>
-        <a class="change_photo" id="next" href="#">Next</a>
-      </div>
-      <div>
-        <h2>{{title}}</h2>
-        <p>{{created_at}}</p>
-      </div>
-    </script>
   </div>
   <div id="stats_area"></div>
-    <script id="stats" type="text/x-handlebars-template">
-      <button class="stat button" id="like" type="button" name="like">Like {{likes}}</button>
-        <button class="stat button" id="favorite" type="button" name="favorite">Favorite {{favorites}}</button>
-    </script>
   </div>
   <h3>Comments</h3>
   <div id="comment_list">
-    <script id="comment" type="text/x-handlebars-template">
-      {{#each commentList}}
-      <h4>{{name}}</h4>
-      <p>{{date}}</p>
-      <img src={{gravatar}}>
-      <p>{{body}}</p>
-      {{/each}}
-    </script>
   </div>
   <form class="comment_form">
     <h4>Your Comment</h4>
