@@ -17,6 +17,23 @@ class View {
     const html = tempScript(stats);
     document.querySelector('#stats_area').innerHTML = html;
   }
+
+  renderComments(comments) {
+    const commentData = {commentList: [comments]};
+    document.querySelector('#comment').innerHTML;
+    const tempScript = Handlebars.compile(template);
+    const html = tempScript(stats);
+    document.querySelector('#comment_list').innerHTML = html;
+  }
+
+  bindChangePhoto() {
+    document.querySelector('#slideshow').addEventListener('click', e => {
+      if (e.target.classList.contains(".change_photo")) {
+        const destination = e.target.id;
+        this.gallery.displayPage(destination);
+      }
+    });
+  }
 }
 
 class Photos {
@@ -28,12 +45,23 @@ class Photos {
     return this;
   }
 
-  next() {
-    if (this.currentLocation === this.photoList.length - 1)
-      this.currentLocation = 0;
-    else {
-      this.currentLocation++;
+  switchPhoto(direction) {
+    if (direction === 'next') {
+      this.current_location = (this.current_location === this.photoList.length - 1) ? 0 : this.currentLocation += 1;
+      // if (this.currentLocation === this.photoList.length - 1)
+      //   this.currentLocation = 0;
+      // else {
+      //   this.currentLocation++;
+      // }
+    } else if (direction === 'prev') {
+      this.current_location = (this.current_location === 0) ? this.photoArray.length - 1 : this.currentLocation -= 1;
+      // if (this.current_location === 0) {
+      //   this.currentLocation = this.photoArray.length - 1;
+      // } else {
+      //   this.currentLocation -= 1;
+      // }
     }
+
     const photo = this.photoList[this.currentLocation];
     this.currentPhoto = this.formatPhotoData(photo)
     console.log(this.currentPhoto)
@@ -66,7 +94,7 @@ class Gallery {
   }
 
   displayPage(direction) {
-    let photo = this.photos.next(direction);
+    let photo = this.photos.switchPhoto(direction);
     this.view.renderPhoto(photo.photoInfo);
     this.view.renderStats(photo.statsInfo);
     this.currentID = photo.photoInfo.photo_id;
