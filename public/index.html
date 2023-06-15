@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+  <!-- <link type="text/css" rel="stylesheet" href="public/style.css"> -->
+  <title>Photo Gallery</title>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <link rel="stylesheet" href="stylesheets/gallery.css" />
+  <script src="javascripts/gallery.js"></script>
+</head>
+<body>
+  <main>
+  <h1>Henrys Pics</h1>
+  <div id="slideshow">
+    <script id="slide" type="text/x-handlebars-template">
+      <div id="photo">
+        <figure>
+          <img src={{src}}>
+          <figcaption>{{caption}}</figcaption>
+        </figure>
+      </div>
+      <div>
+        <a class="prev" href="#">Prev</a>
+        <a class="next" href="#">Next</a>
+      </div>
+      <div>
+        <h2>{{title}}</h2>
+        <p>{{created_at}}</p>
+      </div>
+    </script>
+  </div>
+  <div id="stats_area"></div>
+    <script id="stats" type="text/x-handlebars-template">
+      <button class="stat button" id="like" type="button" name="like">Like {{likes}}</button>
+        <button class="stat button" id="favorite" type="button" name="favorite">Favorite {{favorites}}</button>
+    </script>
+  </div>
+  <h3>Comments</h3>
+  <div class="comments_list">
+    <script id="comment" type="text/x-handlebars-template">
+      
+    </script>
+  </div>
+  <form class="comment_form">
+    <h4>Your Comment</h4>
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" name="name"><br>
+    <label for="email">Email Address:</label>
+    <input type="text" id="email" name="email" placeholder="you@example.com"><br>
+    <label for="comment">Comment</label>
+    <input type="text" id="comment" name="comment"><br>
+    <input class="button" type="submit" value="Post Comment">
+  </form>
+</main>
+</body>
