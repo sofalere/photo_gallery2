@@ -19,8 +19,8 @@
         </figure>
       </div>
       <div>
-        <a class="prev" href="#">Prev</a>
-        <a class="next" href="#">Next</a>
+        <a class="change_photo" id="prev" href="#">Prev</a>
+        <a class="change_photo" id="next" href="#">Next</a>
       </div>
       <div>
         <h2>{{title}}</h2>
@@ -35,9 +35,14 @@
     </script>
   </div>
   <h3>Comments</h3>
-  <div class="comments_list">
+  <div id="comment_list">
     <script id="comment" type="text/x-handlebars-template">
-      
+      {{#each commentList}}
+      <h4>{{name}}</h4>
+      <p>{{date}}</p>
+      <img src={{gravatar}}>
+      <p>{{body}}</p>
+      {{/each}}
     </script>
   </div>
   <form class="comment_form">
