@@ -63,6 +63,11 @@ class View {
   resetCommentForm() {
     document.querySelector('.comment_form').reset();
   }
+
+  displayError() {
+    alert('There was an error processing this request.');
+    this.resetCommentForm();
+  }
 }
 
 class Photos {
@@ -90,8 +95,7 @@ class Photos {
     }
 
     const photo = this.photoList[this.currentLocation];
-    this.currentPhoto = this.formatPhotoData(photo)
-    console.log(this.currentPhoto)
+    this.currentPhoto = this.formatPhotoData(photo);
     return this.currentPhoto;
   }
 
@@ -138,44 +142,44 @@ class Gallery {
     this.getComments(((comments) => {
       this.photos.comments = comments;
       this.view.renderComments(comments);
-    }).bind(this));
+    }).bind(this), this.reject.bind(this));
   }
 
-  getAll = async function getAll(resolve, reject) {
+  sendRequest = async function(path, resolve, options) {
     try {
-      const response = await fetch("http://localhost:3000/photos");       
+      const response = await fetch("http://localhost:3000/" + path, options);       
       const jsonData = await response.json();
       resolve(jsonData);
     } catch(error) {
-      console.log(error);
+      this.reject(error);
     }
   }
 
-  getComments = async function getComments(resolve, reject) {
-    try {
-      const response = await fetch("http://localhost:3000/comments?" + new URLSearchParams({photo_id: this.currentID}));
-      const jsonData = await response.json();
-      console.log(jsonData);
-      resolve(jsonData);
-    } catch(error) {
-      console.log(error);
-    }
+  getAll(resolve) {
+    this.sendRequest("photos", resolve)
   }
 
-  postStat = async function postStat(stat, resolve) {
-    try {
-      stat = stat.slice(0, -1);
-      const response = await fetch("http://localhost:3000/photos/" + stat,
-        { method: "POST", 
-          headers: { "Content-Type": "application/json", }, 
-          body: JSON.stringify({photo_id: this.currentID}),
-        });
-      const jsonData = await response.json(); 
-      console.log(jsonData);    
-      resolve(jsonData);
-    } catch(error) {
-      console.log(error);
-    }
+  getComments(resolve) {
+    const path = "comments?" + new URLSearchParams({photo_id: this.currentID});
+    this.sendRequest(path, resolve)
+  }
+
+  postStat(stat, resolve) {
+    const path = "photos/" + stat.slice(0, -1);
+    const options = { method: "POST", 
+                      headers: { "Content-Type": "application/json", }, 
+                      body: JSON.stringify({photo_id: this.currentID}),
+                   };
+    this.sendRequest(path, resolve, options);
+  }
+
+  postComment(comment, resolve) {
+    comment = this.formatCommentData(comment);
+    const options = { method: "POST", 
+                      headers: { "Content-Type": "application/json", }, 
+                      body: JSON.stringify(comment),
+                    };
+    this.sendRequest("comments/new", resolve, options)
   }
 
   incrementStatHandler(stat) {
@@ -183,21 +187,6 @@ class Gallery {
       const newStats = this.photos.updateStat(stat, newTotal);
       this.view.renderStats(newStats);
     }).bind(this));
-  }
-
-  postComment = async function postComment(comment, resolve) {
-    try {
-      const response = await fetch("htts://localhost:3000/comments/new",
-        { method: "POST", 
-          headers: { "Content-Type": "application/json", }, 
-          body: JSON.stringify(comment),
-        });
-      const jsonData = await response.json(); 
-      console.log(jsonData);    
-      resolve(jsonData);
-    } catch(error) {
-      console.log(error);
-    }
   }
 
   formatCommentData(data) {
@@ -209,15 +198,17 @@ class Gallery {
   }
 
   submitCommentHandler(data) {
-    data = this.formatCommentData(data);
     this.postComment(data, ((comment) => {
       const comments = this.photos.updateComments(comment);
       this.view.renderComments(comments);
       this.view.resetCommentForm();
     }).bind(this));
   }
-}
 
+  reject(error) {
+    this.view.displayError();
+  }
+}
 
 document.addEventListener("DOMContentLoaded", e => {
   new Gallery();
