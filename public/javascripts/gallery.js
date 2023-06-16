@@ -3,6 +3,7 @@ class View {
     this.gallery = gallery;
     this.bindChangePhoto();
     this.bindAddStat();
+    this.bindSubmitComment();
     return this;
   }
 
@@ -49,6 +50,18 @@ class View {
         this.gallery.incrementStatHandler(stat);
       }
     });    
+  }
+
+  bindSubmitComment() {
+    document.querySelector('.comment_form').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = new FormData(e.currentTarget);
+      this.gallery.submitCommentHandler(data);
+    });
+  }
+
+  resetCommentForm() {
+    document.querySelector('.comment_form').reset();
   }
 }
 
@@ -98,6 +111,11 @@ class Photos {
   updateStat(stat, newTotal) {
     this.currentPhoto.statsInfo[stat] = newTotal['total'];
     return this.currentPhoto.statsInfo;
+  }
+
+  updateComments(comment) {
+    this.comments.push(comment);
+    return this.comments;
   }
 }
 
@@ -166,33 +184,41 @@ class Gallery {
       this.view.renderStats(newStats);
     }).bind(this));
   }
+
+  postComment = async function postComment(comment, resolve) {
+    try {
+      const response = await fetch("htts://localhost:3000/comments/new",
+        { method: "POST", 
+          headers: { "Content-Type": "application/json", }, 
+          body: JSON.stringify(comment),
+        });
+      const jsonData = await response.json(); 
+      console.log(jsonData);    
+      resolve(jsonData);
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  formatCommentData(data) {
+    const result = {photo_id: this.currentID};
+    for(let [k,v] of data.entries()) {
+      result[k] = v;
+    }
+    return result;
+  }
+
+  submitCommentHandler(data) {
+    data = this.formatCommentData(data);
+    this.postComment(data, ((comment) => {
+      const comments = this.photos.updateComments(comment);
+      this.view.renderComments(comments);
+      this.view.resetCommentForm();
+    }).bind(this));
+  }
 }
 
 
 document.addEventListener("DOMContentLoaded", e => {
   new Gallery();
 });
-
-// async function updateLikes() {
-//   const response = await fetch("http://localhost:3000/photos/like", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({photo_id: 2}),
-//     });       
-//   const jsonData = await response.json();
-//   return jsonData;
-// }
-
-// async function submitComment() {
-//   const response = await fetch("http://localhost:3000/comments/new", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({photo_id: 1, body: 'hey im body', name: 'jedd', email: 'stephen@gmail.com'}),
-//     });       
-//   const jsonData = await response.json();
-//   return jsonData;
-// }

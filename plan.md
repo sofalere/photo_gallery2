@@ -137,6 +137,7 @@ methods
  - init(gallery) 
   - this.gallery return this
   - this.bindChangePhotoButton
+  - this.bindSubmitComment
 
 - renderPhoto(photo)
 - renderStats(stats)
@@ -156,3 +157,5 @@ bind to #stats_area
 
 - bind submit addComment form
   gallery.submitCommentHandler
+  photos.updateComments
+  view.renderComments
