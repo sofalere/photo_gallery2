@@ -142,10 +142,13 @@ methods
 - renderStats(stats)
 - renderComments(comments)
 
-- bind click stats
+- bindAddStat
+bind to #stats_area
+  if .stat
+  use id
   gallery.incrementStatHandler()
 
-- bind changePhotoButton
+- bindChangePhoto
   bind to #slideshow 
   if (e.target.classList.contains(".change_photo")) {
     destination = e.target.id

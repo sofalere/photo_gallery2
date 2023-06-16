@@ -2,6 +2,7 @@ class View {
   constructor(gallery) {
     this.gallery = gallery;
     this.bindChangePhoto();
+    this.bindAddStat();
     return this;
   }
 
@@ -39,6 +40,16 @@ class View {
       }
     });
   }
+
+  bindAddStat() {
+    document.querySelector('#stats_area').addEventListener('click', e => {
+      e.preventDefault();
+      if (e.target.classList.contains("stat")) {
+        const stat = e.target.id;
+        this.gallery.incrementStatHandler(stat);
+      }
+    });    
+  }
 }
 
 class Photos {
@@ -52,14 +63,12 @@ class Photos {
 
   switchPhoto(direction) {
     if (direction === 'next') {
-      // this.current_location = (this.current_location === this.photoList.length - 1) ? 0 : this.currentLocation += 1;
       if (this.currentLocation === this.photoList.length - 1)
         this.currentLocation = 0;
       else {
         this.currentLocation++;
       }
     } else if (direction === 'prev') {
-      // this.current_location = (this.current_location === 0) ? this.photoList.length - 1 : this.currentLocation -= 1;
       if (this.currentLocation === 0) {
         this.currentLocation = this.photoList.length - 1;
       } else {
@@ -84,6 +93,11 @@ class Photos {
                            favorites: photo.favorites,
                          }
            };
+  }
+
+  updateStat(stat, newTotal) {
+    this.currentPhoto.statsInfo[stat] = newTotal['total'];
+    return this.currentPhoto.statsInfo;
   }
 }
 
@@ -122,13 +136,35 @@ class Gallery {
   getComments = async function getComments(resolve, reject) {
     try {
       const response = await fetch("http://localhost:3000/comments?" + new URLSearchParams({photo_id: this.currentID}));
-
       const jsonData = await response.json();
       console.log(jsonData);
       resolve(jsonData);
     } catch(error) {
       console.log(error);
     }
+  }
+
+  postStat = async function postStat(stat, resolve) {
+    try {
+      stat = stat.slice(0, -1);
+      const response = await fetch("http://localhost:3000/photos/" + stat,
+        { method: "POST", 
+          headers: { "Content-Type": "application/json", }, 
+          body: JSON.stringify({photo_id: this.currentID}),
+        });
+      const jsonData = await response.json(); 
+      console.log(jsonData);    
+      resolve(jsonData);
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  incrementStatHandler(stat) {
+    this.postStat(stat, ((newTotal) => {
+      const newStats = this.photos.updateStat(stat, newTotal);
+      this.view.renderStats(newStats);
+    }).bind(this));
   }
 }
 
